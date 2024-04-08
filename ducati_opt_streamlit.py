@@ -91,12 +91,15 @@ else:
 
 st.divider()
 
-st.subheader(':orange[Verifica di fattibilità]')
+
 # Grafico df_tgt
 df_tgt_melt=df_tgt.melt(var_name='Mese', value_name='Vendite',ignore_index=False)
 
 fig = px.bar(df_tgt_melt, x= "Mese", y='Vendite', title= 'Vendite complesive per mese e modello',color=df_tgt_melt.index)
 st.plotly_chart(fig, use_container_width=True)
+
+
+st.subheader(':orange[Verifica di fattibilità]')
 
 # Estrazione giorni lavorativi per mese
 def giorni_lav (mese):
@@ -187,6 +190,8 @@ for i in range (len (df_avg_production)):
 st.header('Ottimizzazione cadenze', divider='red')
 
 # Funzione di ottimizzazione
+# decorare
+@st.cache_resource
 def ottimizza (mese):
     model_linea = LpProblem(name='linea', sense=LpMinimize)
     # variabili decisionali: giorni nel mese e target sales
@@ -311,6 +316,10 @@ df_final = df_final[['Data','Mese', 'DSX', 'DVL', 'HYM', 'HYM_698', 'MON', 'MTS_
 
 df_final['Data']=df_final['Data'].dt.strftime('%d/%m/%Y')
 df_final['Totale']=df_final[veicoli].sum(axis=1)
+df_final['Tot_MTS_V2_MTS_V4'] = df_final[veicoli_MTS].sum(axis=1)
+df_final['Tot_PAN_V2_SF_V2_PAN_V4_SF_V4']=df_final[veicoli_PAN_SF].sum(axis=1)
+df_final['Tot_SCR_HYM_HYM_698']=df_final[veicoli_SCR_HYM].sum(axis=1)
+df_final['Tot_MON_SS_X_DVL_DVL_DSX']=df_final[veicoli_MON_SS_DVL_DSX].sum(axis=1)
 st.dataframe(df_final, use_container_width=True)
 
 
@@ -333,13 +342,16 @@ scarica_excel(df_final, 'df_in_excel')
 fig_line = px.line(df_final, x="Data", y="Totale", title='Produzione totale per giorno')
 st.plotly_chart(fig_line, use_container_width=True)
 
+fig_line_partizione = px.line(df_final, x="Data", y=['Tot_MTS_V2_MTS_V4','Tot_PAN_V2_SF_V2_PAN_V4_SF_V4','Tot_SCR_HYM_HYM_698','Tot_MON_SS_X_DVL_DVL_DSX'], title='Produzione totale per giorno per linea')
+st.plotly_chart(fig_line_partizione, use_container_width=True)
+
 # ciclo per grafici produzione per linea
 df_final_chart = df_final.copy()
 df_final_chart.set_index('Data', inplace=True)
 lista_linee = [veicoli_MTS,veicoli_PAN_SF,veicoli_SCR_HYM ,veicoli_MON_SS_DVL_DSX]
 for i in range (len (lista_linee)):
     df_final_linea = df_final_chart[df_final_chart.columns[df_final_chart.columns.isin(lista_linee[i])]]
-    fig_linea_final = px.line(df_final_linea, x= df_final_chart.index, y=lista_linee[i], title= f'Produzione: {lista_linee[i]}')
+    fig_linea_final = px.bar(df_final_linea, x= df_final_chart.index, y=lista_linee[i], title= f'Dettaglio produzione: {lista_linee[i]}')
     st.plotly_chart(fig_linea_final, use_container_width=True)
 
-st.stop()
+#st.stop()

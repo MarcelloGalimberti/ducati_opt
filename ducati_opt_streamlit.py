@@ -1,7 +1,7 @@
 # Librerie
 from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize
 from pulp import *
-from pulp import GLPK
+#from pulp import GLPK
 import numpy as np
 import pandas as pd
 import streamlit as st

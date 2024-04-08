@@ -6,7 +6,6 @@ plotly-express
 matplotlib-inline
 ipython
 PuLP
-glpk
 streamlit
 openpyxl
 XlsxWriter

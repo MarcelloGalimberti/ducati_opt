@@ -89,8 +89,23 @@ else:
     st.stop()
 
 
-st.divider()
+# Estrazione giorni lavorativi per mese
+def giorni_lav (mese):
+    giorni = len(df_giorni[df_giorni['Mese']==mese])
+    return giorni
 
+
+
+
+# grafico giorni lavorativi
+df_giorni_lavorativi = pd.DataFrame(index=mesi)
+
+for mese in mesi:
+    df_giorni_lavorativi.loc[mese,'Giorni lavorativi']=giorni_lav(mese)
+fig_mesi = px.bar(df_giorni_lavorativi, x= df_giorni_lavorativi.index, y='Giorni lavorativi', title= 'Giorni lavorativi per mese', text='Giorni lavorativi')
+st.plotly_chart(fig_mesi, use_container_width=True)
+
+st.divider()
 
 # Grafico df_tgt
 df_tgt_melt=df_tgt.melt(var_name='Mese', value_name='Vendite',ignore_index=False)
@@ -101,10 +116,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.subheader(':orange[Verifica di fattibilità]')
 
-# Estrazione giorni lavorativi per mese
-def giorni_lav (mese):
-    giorni = len(df_giorni[df_giorni['Mese']==mese])
-    return giorni
+
 
 
 # test per KO
